@@ -20,11 +20,17 @@ ENDM
 
 ARR_ADD MACRO DEST, SRC, D_IDX, S_IDX
     PUSH CX
-    push DX
+    PUSH DX
+    
+    MOV CX, S_IDX
+    LEA SI, SRC
+    ADD SI, CX
+    MOV CL, [SI]
     
     MOV DX, D_IDX
-    MOV CX, SRC[S_IDX]
-    MOV DEST[DL], CL
+    LEA DI, DEST
+    ADD DI, DX
+    MOV [DI], CL
     
     POP CX
     POP DX
@@ -77,39 +83,50 @@ start:
         mov dl, ch  ;n2
         sub dl, bl
         
+        mov cx, 00h ;zera cx pra loopar _temp_left e _temp_right
+        
         mov cl, dh
         mov si, 00h
         push bx
-        _temp_left:
+        mov bl, bh
+        mov bh, 00h
+        _temp_left: 
             add bx, si
-            ARR_ADD left, arr, si, bh
+            ARR_ADD left, arr, si, bx
             sub bx, si
             inc si
             loop _temp_left
         pop bx
         
-        mov cx, dl
+        mov cl, dl
         mov si, 00h
         push bx
+        mov bh, 00h
+        inc bx
         _temp_right:
             add bx, si
-            inc bx
-            ARR_ADD right, arr, si, bl
+            ARR_ADD right, arr, si, bx
             sub bx, si
-            dec bx
             inc si
             loop _temp_right
         pop bx    
             
-        ;SI = left index  /  DI = right index  /  BL = arr index    
+        ;SI = left index  /  DI = right index  /  BX = arr index
+        ;AH e AL = comp / CX = n1 / DH = n1 / DL = n2   
         mov si, 00h  
-        mov di, 00h 
-        mov bl, bl   
+        mov di, 00h
+        
+        mov bl, ;AAAHHHH NÃO TEM REGISTRAFOR SOBRANDOOASCOIAÇVDSAIHVD 
+        mov bl, bh
+        mov bh, 00h
+        
+        mov cx, 0000h
+        mov cl, dh   
         
         _add_loop:   
-            cmp si, dh
+            cmp si, cx
             jae _copy_right
-            cmp di, dl
+            cmp di, dx
             jae _copy_left
             
             mov ah, left[si]
@@ -127,42 +144,41 @@ start:
          
         
         _add_left:
-        ARR_ADD arr, left, bl, si
+        ARR_ADD arr, left, bx, si
         inc si
-        inc bl
+        inc bx
         ret
         
         _add_right:
-        ARR_ADD arr, right, bl, di
+        ARR_ADD arr, right, bx, di
         inc di
-        inc bl
+        inc bx
         ret
         
         
         _copy_left:
-        mov cl, dh
-        sub cl, si
-        _copy_left_letter:
+        sub cx, si
+        
+        _copy_left_num:
             ARR_ADD arr, left, bl, si
             inc bl
             inc si
-            loop _copy_left_letter    
+            loop _copy_left_num    
         cmp si, dh
         jae _return
         
         _copy_right:
-        mov cl, dh
-        sub cl, si
-        _copy_right_letter:
+        sub cx, di
+        _copy_right_num:
             ARR_ADD arr, left, bl, di
             inc bl
             inc di
-            loop _copy_right_letter    
+            loop _copy_right_num    
         cmp di, dl
         jae _return    
         
             
-        _retun:
+        _return:
         ret   
                 
         
