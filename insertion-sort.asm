@@ -1,6 +1,6 @@
 .model small
 .data
-    arr db "987654321$"
+    arr db "836471294$"
     enter db 0ah, 0dh, "$"
     len dw 09h
     i dw ?
@@ -36,9 +36,7 @@ ENDM
             jna  _no_shift
             mov arr[si+1], bh
 
-            mov dl, 01h
-            cmp dl, 0h
-            ja  _while
+            jmp _while
             _no_shift:
 
         mov arr[si+1], al
