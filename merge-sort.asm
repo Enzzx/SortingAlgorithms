@@ -1,7 +1,7 @@
 .model small
 .stack 100h
 .data
-    arr db "987654321$"
+    arr db "9876543210$"
     len db 09h
     enter db 0ah, 0dh, "$"
     i db ?
@@ -45,7 +45,7 @@ start:
     int 21h
     
     _mergeSort:
-        mov curr_size, 04h
+        mov curr_size, 02h
         _outerloop:
             mov i, 00h
             mov ax, 0000h
@@ -98,37 +98,25 @@ start:
         mov mergeIndex, bx  ;mergeIndex começa com left
         pop bx
                            
-        mov cx, 00h
+        mov cx, 0000h
         mov cl, dh
         mov si, 0000h
-        
-        ;push bx
-        ;mov bl, bh
-        ;mov bh, 00h
         _temp_left:
-            ;add bx, si
             ARR_ADD leftArr, arr, si, mergeIndex
-            ;sub bx, si
             inc mergeIndex
             inc si
             loop _temp_left
-        ;pop bx
         
         
         mov cx, 0000h
         mov cl, dl
         mov si, 0000h
-        
-        ;push bx
-        ;mov bh, 00h
+        mov Di, 0000h
         _temp_right:
-            ;add bx, si
             ARR_ADD rightArr, arr, si, mergeIndex
-            ;sub bx, si
             inc mergeIndex
             inc si
             loop _temp_right
-        ;pop bx
         
         ;SI = left index / DI = right index / mergeIndex = itself
         ;no momento ax será usando pra CMPs e cx está livre
