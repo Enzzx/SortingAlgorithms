@@ -1,8 +1,9 @@
+; - - - / / - - - BOTTOM-TOP APPROACH - - - / / - - -
 .model small
 .stack 100h
 .data
-    arr db "9876543210$"
-    len db 09h
+    arr db "98765432$"
+    len db 08h
     enter db 0ah, 0dh, "$"
     i db ?
     curr_size db ?
@@ -21,17 +22,21 @@ ENDM
 
 ARR_ADD MACRO DEST, SRC, D_IDX, S_IDX
     PUSH DX
+    PUSH DI
+    PUSH SI
     
     MOV AX, S_IDX
     LEA SI, SRC
     ADD SI, AX
     MOV AL, [SI]
+    POP SI
     
     MOV DX, D_IDX
     LEA DI, DEST
     ADD DI, DX
     MOV [DI], AL
-    
+          
+    POP DI
     POP DX
 ENDM
 
@@ -45,7 +50,7 @@ start:
     int 21h
     
     _mergeSort:
-        mov curr_size, 02h
+        mov curr_size, 01h
         _outerloop:
             mov i, 00h
             mov ax, 0000h
@@ -76,6 +81,7 @@ start:
             shl curr_size, 1
             PRINT
             ;verifica se os elementos a mergearem é menor que o total da array
+            mov dl, len
             cmp curr_size, dl
             jb _outerloop
         ret
@@ -111,7 +117,6 @@ start:
         mov cx, 0000h
         mov cl, dl
         mov si, 0000h
-        mov Di, 0000h
         _temp_right:
             ARR_ADD rightArr, arr, si, mergeIndex
             inc mergeIndex
@@ -119,7 +124,6 @@ start:
             loop _temp_right
         
         ;SI = left index / DI = right index / mergeIndex = itself
-        ;no momento ax será usando pra CMPs e cx está livre
         mov si, 0000h
         mov di, 0000h
         mov bl, bh
@@ -132,10 +136,10 @@ start:
             mov ax, 0000h
             mov al, dh
             cmp si, ax
-            ja  _copy_right
+            jae _copy_right
             mov al, dl
             cmp di, ax
-            ja  _copy_left
+            jae _copy_left
             
             mov ah, leftArr[si]
             mov al, rightArr[di]
@@ -178,21 +182,21 @@ start:
             inc si
             loop _copy_left_num
         jmp _return
-        
-        
+
+
         _copy_right:
         mov cl, dl
         sub cx, di
-        
+
         _copy_right_num:
             ARR_ADD arr, rightArr, mergeIndex, di
             inc mergeIndex
             inc di
             loop _copy_right_num
         jmp _return
-        
-        
+
+
         _return:
             ret
-            
-end start                    
+   
+end start
