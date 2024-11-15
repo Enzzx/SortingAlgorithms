@@ -1,9 +1,9 @@
 .model small
 .data
-    arr db "836471294$"
+    arr db "555554444333221$"
     enter db 0ah, 0dh, "$"
-    len dw 09h
-    i dw ?
+    len dw 000fh
+    i dw 01h
 
 .code
 PRINT MACRO
@@ -16,34 +16,32 @@ ENDM
 
     mov dx, @data
     mov ds, dx
-
-    mov i, 1h
-    dec len
+               
     mov cx, len
-
+    
     _loop:
         mov si, i
         mov al, arr[si]
-
+        
         _while:
             dec si
             cmp si, 00ffh
             ja  _no_shift
+            
             mov bh, arr[si]
-            mov bl, arr[si+1]
-
             cmp bh, al
-            jna  _no_shift
+            jbe _no_shift
+            
             mov arr[si+1], bh
-
+            
             jmp _while
             _no_shift:
-
-        mov arr[si+1], al
-        inc i
+        
+        mov arr[si+1], al    
         PRINT
+        inc i
         loop _loop
-    _end:
+        
     mov ah, 4ch
     int 21h
-    end
+    end    
